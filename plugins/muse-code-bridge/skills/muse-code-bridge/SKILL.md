@@ -5,7 +5,7 @@ description: "Use the user's Muse Code subscription from a Codex conversation th
 
 # Muse Code Bridge
 
-Use the bundled `muse-code-bridge` MCP tools. The bridge starts Meta's installed `muse serve` locally and refuses model turns unless Muse reports the browser/account login lane. It strips API-key environment overrides before starting Muse.
+Use the bundled `muse-code-bridge` MCP tools. The bridge starts Meta's installed `muse serve` locally and refuses model turns unless Muse reports the browser/account login lane. Before spawning Muse, it copies the process environment and removes `META_API_KEY` and `MODEL_API_KEY` only from the child copy. It does not change the parent process, shell, environment files, or saved credentials.
 
 If the tools are unavailable, read [setup.md](references/setup.md) and help connect the local MCP server. A skill file alone does not install or authenticate Muse Code. Do not substitute direct Meta Model API calls for the subscription bridge.
 
@@ -55,4 +55,5 @@ Call `get_muse_usage` when the user asks about Muse usage, quota, remaining allo
 - Do not treat `MODEL_API_KEY` or a configured Meta provider in Codex as Muse subscription access.
 - Do not claim a model turn used the subscription unless the bridge accepted it under `accountLogin`.
 - Do not save account data, login codes, usage snapshots, workspace mappings, transcripts, or credentials into the public plugin repository.
+- Diagnostics are redacted at the bridge response boundary. Conversation/progress text, exact pending operations, workspace paths, login codes, and session/request/choice identifiers are intentional local payloads and are not blanket-filtered. Do not describe all MCP output as anonymized or credential-free.
 - `reset_muse_session` clears only the bridge mapping; it does not delete Muse history.

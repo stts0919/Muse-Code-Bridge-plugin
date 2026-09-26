@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdtemp, mkdir, writeFile, chmod, rm } from "node:fs/promises";
+import { access, mkdtemp, mkdir, writeFile, chmod, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import test from "node:test";
@@ -12,10 +12,12 @@ test("resolves the Muse executable from PATH rather than a machine-specific path
   const directory = await mkdtemp(path.join(tmpdir(), "muse-bridge-path-"));
   try {
     const binary = path.join(directory, process.platform === "win32" ? "muse.exe" : "muse");
-    await writeFile(binary, "test fixture\n");
+    const marker = path.join(directory, "must-not-execute");
+    await writeFile(binary, `#!/usr/bin/env node\nrequire("node:fs").writeFileSync(${JSON.stringify(marker)}, "executed");\n`);
     await chmod(binary, 0o700);
     assert.equal(await resolveMuseBinary("muse", { PATH: directory }), binary);
     assert.equal(await resolveMuseBinary(binary, { PATH: "" }), binary);
+    await assert.rejects(access(marker), { code: "ENOENT" });
     await assert.rejects(resolveMuseBinary("muse", { PATH: "" }), /not found/);
   } finally {
     await rm(directory, { recursive: true, force: true });

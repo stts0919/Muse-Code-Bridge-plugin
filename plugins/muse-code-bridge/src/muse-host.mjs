@@ -4,10 +4,10 @@ import { homedir } from "node:os";
 import path from "node:path";
 import { spawnMspConnection } from "@muse-code/sdk";
 import { normalizeUsage } from "./usage.mjs";
-import { publicAccountState, redactDiagnostic } from "./privacy.mjs";
+import { publicAccountState, publicTurnTerminal, redactDiagnostic, redactDiagnosticValue } from "./privacy.mjs";
 import { defaultStateFile, resolveMuseBinary, subscriptionEnvironment } from "./runtime.mjs";
 
-const BRIDGE_VERSION = "0.1.0";
+const BRIDGE_VERSION = "0.1.1";
 const DEFAULT_MUSE_BIN = "muse";
 
 export class BridgeError extends Error {
@@ -487,7 +487,7 @@ export class MuseHostBridge {
         pending: this.#serializePending(state.pending),
       };
     }
-    const terminal = state.terminal;
+    const terminal = publicTurnTerminal(state.terminal);
     const response = state.agentMessages.join("\n\n") || state.liveText || "";
     if (terminal?.terminal === "failed") {
       return {
@@ -659,7 +659,7 @@ export class MuseHostBridge {
       } catch (error) {
         if (!(error instanceof BridgeError) || error.code !== "PENDING_STATE_UNAVAILABLE") throw error;
         pendingState = "unavailable";
-        pendingError = { code: error.code, message: error.message, details: error.details };
+        pendingError = { code: error.code, message: redactDiagnostic(error), details: redactDiagnosticValue(error.details) };
       }
     }
 

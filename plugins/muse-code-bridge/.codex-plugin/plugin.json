@@ -1,6 +1,6 @@
 {
   "name": "muse-code-bridge",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Use account-authenticated Muse Code from Codex through a local MCP bridge.",
   "author": {
     "name": "Muse Code Bridge contributors"

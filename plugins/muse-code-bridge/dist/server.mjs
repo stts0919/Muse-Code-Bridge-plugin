@@ -37824,7 +37824,32 @@ function publicAccountState(account) {
 }
 function redactDiagnostic(error62) {
   const message = error62 instanceof Error ? error62.message : String(error62);
-  return message.replace(/(Bearer\s+)[^\s"',}]+/gi, "$1[REDACTED]").replace(/((?:api[_-]?key|access[_-]?token|refresh[_-]?token|authorization|password|cookie)\s*["']?\s*[:=]\s*["']?)[^\s"',}]+/gi, "$1[REDACTED]").replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, "[REDACTED_EMAIL]").replace(/\b[A-Za-z0-9_-]{48,}\b/g, "[REDACTED]").slice(0, 1200);
+  return message.replace(/((?:authorization|cookie|set-cookie)\s*:\s*)[^\r\n]*/gi, "$1[REDACTED]").replace(/(Bearer\s+)[^\s"',}]+/gi, "$1[REDACTED]").replace(/((?:META_API_KEY|MODEL_API_KEY|api[_-]?key|access[_-]?token|refresh[_-]?token|password|client[_-]?secret)\s*["']?\s*[:=]\s*)(?:"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*')/gi, "$1[REDACTED]").replace(/((?:api[_-]?key|access[_-]?token|refresh[_-]?token|authorization|password|cookie)\s*["']?\s*[:=]\s*["']?)[^\s"',}]+/gi, "$1[REDACTED]").replace(/(https?:\/\/)[^\s/@]+:[^\s/@]+@/gi, "$1[REDACTED]@").replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, "[REDACTED_EMAIL]").replace(/\b[A-Za-z0-9_-]{48,}\b/g, "[REDACTED]").slice(0, 1200);
+}
+var CREDENTIAL_FIELD = /^(?:META_API_KEY|MODEL_API_KEY|api[_-]?key|access[_-]?token|refresh[_-]?token|authorization|password|cookies?|set-cookie|client[_-]?secret|credentials?|secret|token)$/i;
+var IDENTIFIER_FIELD = /^(?:session[_-]?id|turn[_-]?id|request[_-]?id|approval[_-]?id|user[_-]?input[_-]?id|choice[_-]?id|requirement[_-]?id|pending_request_ids|view[_-]?cursor)$/i;
+function redactDiagnosticValue(value, field = "", seen = /* @__PURE__ */ new WeakSet(), depth = 0) {
+  if (CREDENTIAL_FIELD.test(field)) return "[REDACTED]";
+  if (typeof value === "string") return IDENTIFIER_FIELD.test(field) ? value : redactDiagnostic(value);
+  if (value === null || typeof value !== "object") return value;
+  if (depth >= 20) return "[TRUNCATED_DIAGNOSTIC]";
+  if (seen.has(value)) return "[CIRCULAR_DIAGNOSTIC]";
+  seen.add(value);
+  try {
+    if (field === "account") return publicAccountState(value);
+    if (Array.isArray(value)) return value.map((item) => redactDiagnosticValue(item, field, seen, depth + 1));
+    return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, redactDiagnosticValue(item, key, seen, depth + 1)]));
+  } finally {
+    seen.delete(value);
+  }
+}
+function publicTurnTerminal(terminal) {
+  if (!terminal || typeof terminal !== "object") return terminal;
+  const keys = ["terminal", "sessionId", "turnId", "commandId", "viewCursor", "sourceRange", "durationMs", "timeToFirstTokenMs", "usage"];
+  const result = Object.fromEntries(keys.filter((key) => Object.hasOwn(terminal, key)).map((key) => [key, terminal[key]]));
+  if (Object.hasOwn(terminal, "error")) result.error = redactDiagnosticValue(terminal.error);
+  if (typeof terminal.reason === "string") result.reason = redactDiagnostic(terminal.reason);
+  return result;
 }
 
 // src/runtime.mjs
@@ -37855,7 +37880,7 @@ async function resolveMuseBinary(binary = "muse", env = process.env) {
 }
 
 // src/muse-host.mjs
-var BRIDGE_VERSION = "0.1.0";
+var BRIDGE_VERSION = "0.1.1";
 var DEFAULT_MUSE_BIN = "muse";
 var BridgeError = class extends Error {
   constructor(code, message, details = {}) {
@@ -38281,7 +38306,7 @@ var MuseHostBridge = class {
         pending: this.#serializePending(state.pending)
       };
     }
-    const terminal = state.terminal;
+    const terminal = publicTurnTerminal(state.terminal);
     const response = state.agentMessages.join("\n\n") || state.liveText || "";
     if (terminal?.terminal === "failed") {
       return {
@@ -38445,7 +38470,7 @@ var MuseHostBridge = class {
       } catch (error62) {
         if (!(error62 instanceof BridgeError) || error62.code !== "PENDING_STATE_UNAVAILABLE") throw error62;
         pendingState = "unavailable";
-        pendingError = { code: error62.code, message: error62.message, details: error62.details };
+        pendingError = { code: error62.code, message: redactDiagnostic(error62), details: redactDiagnosticValue(error62.details) };
       }
     }
     return {
@@ -38471,7 +38496,7 @@ var MuseHostBridge = class {
 
 // src/server.mjs
 var server = new McpServer(
-  { name: "muse-code-bridge", version: "0.1.0" },
+  { name: "muse-code-bridge", version: "0.1.1" },
   { capabilities: { logging: {} } }
 );
 var bridge = new MuseHostBridge();
@@ -38487,7 +38512,7 @@ var textContent = (text) => [{ type: "text", text }];
 function errorResult(error62) {
   const code = error62 instanceof BridgeError ? error62.code : "BRIDGE_ERROR";
   const message = redactDiagnostic(error62);
-  const details = error62 instanceof BridgeError ? error62.details : {};
+  const details = error62 instanceof BridgeError ? redactDiagnosticValue(error62.details) : {};
   return {
     isError: true,
     structuredContent: { status: "error", code, message, details },

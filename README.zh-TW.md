@@ -15,6 +15,8 @@
 
 Bridge 會從 Muse 子程序環境移除 `META_API_KEY` 和 `MODEL_API_KEY`，並且只在 Muse 回報 `accountLogin` 時允許模型回合。訂閱條款與限額仍由 Meta 決定；帳號已登入並不等於所有訂閱權益都已驗證。尚未取得用量觀測時，監控會顯示資料未提供。
 
+移除動作只作用在傳給 `muse serve` 的環境副本，父程序、shell、`.env` 檔案與已儲存的 credential 都保持原樣。PATH 搜尋只檢查執行權限，不會執行候選檔案；Bridge 連線時才啟動找到的 Muse 執行檔。
+
 ## 在 Codex 安裝
 
 1. 依照 [Meta 官方文件](https://dev.meta.ai/docs/muse-code)安裝 Muse Code，再完成瀏覽器登入：
@@ -108,6 +110,10 @@ Bridge 只會保存 workspace 與 session 的對應，預設位置為：
 
 Status 與用量回覆會省略帳號名稱和 Email；診斷訊息會遮蔽常見 credential 和 Email 格式。專案沒有加入分析追蹤或託管 Bridge 服務，用量 widget 也沒有外部素材與網路端點。
 
+遮蔽範圍包含錯誤訊息、巢狀錯誤 details、回合結束時的 error／reason 診斷，以及 protocol-error 紀錄。未定義的回合結束頂層 metadata 不會轉送。較長字串的保守規則只套用於診斷文字；session、request 與 choice ID 會保留原值。這是盡力遮蔽的診斷機制，不是完整資料外洩防護。
+
+正常 Muse 回覆與進度文字、待核准的實際操作／問題、必要的 workspace 路徑，以及登入驗證網址／代碼，會按流程傳給本機 client，不會全面改寫。因此 MCP 回覆仍可能包含任務內容，不能視為已完全匿名。
+
 實際使用時，提示詞與選取的 workspace 內容會交由 Muse／Meta 處理，也可能依 Muse Code 或 MCP 工具的既有規則保留紀錄。Session ID、必要路徑、代理輸出與待核准操作會經過本機 MCP 連線。重設 Bridge 對應不會刪除這些歷史；請勿把 runtime state、log、匯出對話或含個資的截圖上傳本 Repo。
 
 ## 開發與驗證
@@ -126,6 +132,8 @@ node scripts/check-public.mjs
 ```
 
 測試只使用合成資料，不呼叫模型、不讀取 credential，也不使用訂閱額度。打包會產生第三方授權聲明。提交前請檢查 staged 檔案，執行公開檢查，並為自己的 Git commit 使用非私人 Email 設定。
+
+首次啟動測試使用合成 MSP 執行檔，檢查未安裝／未登入、回覆保留、本機 state 位置與明確核准流程。這些測試不代表真實 Meta 登入或 Windows 程序行為已實測；Windows 路徑規則另有單元測試。
 
 ## 授權
 

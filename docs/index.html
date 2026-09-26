@@ -40,7 +40,7 @@
         <div class="intro-actions"><a class="button-primary" href="#install">開始安裝 <span aria-hidden="true">↓</span></a><a class="text-link" href="https://github.com/stts0919/Muse-Code-Bridge-plugin">查看原始碼 ↗</a></div>
         <div class="project-facts"><span>MIT 授權</span><span>Node.js 22+</span><span>Muse Code 1.3.0 已驗證</span></div>
         <p>這是獨立的社群 plugin。它在你的電腦上啟動官方 <code>muse serve</code>，把 Muse 的回覆、核准選項與用量資料帶回 Codex。套件包含可重複使用的 <strong>Muse skill</strong> 和本機 <strong>MCP server</strong>。</p>
-        <div class="note"><strong>先確認使用通道</strong><p>Bridge 只在 Muse 回報 <code>accountLogin</code> 時允許模型回合，並移除子程序的 API key 環境覆蓋。你的訂閱資格與限額仍由 Meta 決定；額外建立的 Model API key 會走獨立的 API 計費。</p></div>
+        <div class="note"><strong>先確認使用通道</strong><p>Bridge 只在 Muse 回報 <code>accountLogin</code> 時允許模型回合。啟動前會複製環境設定，只從 <code>muse serve</code> 子程序的副本移除 <code>META_API_KEY</code> 與 <code>MODEL_API_KEY</code>；父程序、shell、環境檔與已存 credential 都維持原樣。你的訂閱資格與限額仍由 Meta 決定。</p></div>
       </section>
 
       <section id="install">
@@ -115,6 +115,7 @@ codex plugin add muse-code-bridge@muse-code-bridge-public</code></pre></div>
         <h3>使用時，資料存在哪裡？</h3>
         <p>Bridge 在使用者的系統資料目錄保存 workspace 與 session 的對應。可用 <code>MUSE_BRIDGE_STATE_PATH</code> 在本機改變位置，建議放在 Git repo 之外。</p>
         <p>Status 與用量回覆會省略帳號名稱和 Email，診斷訊息會遮蔽常見 credential 格式。提示詞與選取的專案內容仍會由 Muse／Meta 處理，Muse Code 或 MCP client 也可能依自己的規則保留紀錄。</p>
+        <p>遮蔽範圍包含錯誤訊息、巢狀錯誤 details、回合結束的 error／reason，以及 protocol-error。正常對話與進度文字、待核准的實際操作、必要路徑、session／request／choice ID 與登入代碼會保留，MCP 回覆不能視為已全面匿名。PATH 搜尋只檢查執行權限，不會執行候選檔案。</p>
         <p><code>reset_muse_session</code> 只清除 Bridge 對應。請勿把 runtime state、log、匯出對話或含個資的截圖上傳公開 Repo。</p>
       </section>
 

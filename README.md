@@ -15,6 +15,8 @@ This is an independent community integration. Muse Code itself is installed sepa
 
 Muse's subscription terms and usage limits still apply. The bridge strips `META_API_KEY` and `MODEL_API_KEY` from the Muse child environment, then refuses model turns unless Muse reports `accountLogin`. An account login alone does not prove every subscription entitlement; usage reports may be unavailable until Muse returns an observation.
 
+Only the copied environment passed to the `muse serve` child is changed: the parent process, shell, `.env` files, and saved credentials are left untouched. PATH resolution only checks executable access; it does not run candidates. The resolved Muse executable is started afterward, when the bridge connects.
+
 ## Install in Codex
 
 1. Install Muse Code from the [official instructions](https://dev.meta.ai/docs/muse-code), then complete its browser login:
@@ -104,6 +106,10 @@ Override it locally with `MUSE_BRIDGE_STATE_PATH`, preferably outside your Git w
 
 Account labels/emails are omitted from status and usage responses. Diagnostic redaction covers common credentials and email patterns. No analytics or hosted bridge service is included. The usage widget has no external assets or network endpoints.
 
+Redaction applies to error messages, nested error details, terminal error/reason diagnostics, and protocol-error logs. Unspecified top-level terminal metadata is omitted. The broad long-string rule is confined to diagnostic text; opaque session, request, and choice IDs retain their values. This is a best-effort diagnostic filter, not full data-loss prevention.
+
+Normal Muse replies and progress text, exact pending operations/questions, necessary workspace paths, and login verification URLs/codes are intentionally relayed to the local client. They are not blanket-redacted and can contain information from your task. Do not treat every MCP response as anonymized.
+
 During actual use, prompts and selected workspace content are processed by Muse/Meta and may be recorded by Muse Code or the MCP host under their normal policies. Session IDs, required workspace paths, agent output, and pending operations pass through the local MCP connection. Resetting the bridge mapping does not delete those histories. Do not upload runtime state, logs, exports, or screenshots containing private information to this repository.
 
 ## Development
@@ -122,6 +128,8 @@ node scripts/check-public.mjs
 ```
 
 Tests use synthetic data and do not invoke a model, access credentials, or consume a subscription. Building also generates third-party license notices for the bundled dependencies. Before committing, review the staged files and run the public-artifact check; use a private-email Git setting for your own commits.
+
+The first-run tests use a synthetic MSP executable to check missing-install/login states, reply preservation, private state placement, and explicit approvals. They do not prove live Meta sign-in or Windows process behavior; Windows path rules are covered by separate unit tests.
 
 ## License
 

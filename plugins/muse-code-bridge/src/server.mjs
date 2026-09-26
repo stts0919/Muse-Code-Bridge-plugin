@@ -2,7 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 import { BridgeError, MuseHostBridge } from "./muse-host.mjs";
-import { redactDiagnostic } from "./privacy.mjs";
+import { redactDiagnostic, redactDiagnosticValue } from "./privacy.mjs";
 import {
   formatUsageText,
   USAGE_WIDGET_HTML,
@@ -10,7 +10,7 @@ import {
 } from "./usage.mjs";
 
 const server = new McpServer(
-  { name: "muse-code-bridge", version: "0.1.0" },
+  { name: "muse-code-bridge", version: "0.1.1" },
   { capabilities: { logging: {} } },
 );
 const bridge = new MuseHostBridge();
@@ -30,7 +30,7 @@ const textContent = (text) => [{ type: "text", text }];
 function errorResult(error) {
   const code = error instanceof BridgeError ? error.code : "BRIDGE_ERROR";
   const message = redactDiagnostic(error);
-  const details = error instanceof BridgeError ? error.details : {};
+  const details = error instanceof BridgeError ? redactDiagnosticValue(error.details) : {};
   return {
     isError: true,
     structuredContent: { status: "error", code, message, details },
