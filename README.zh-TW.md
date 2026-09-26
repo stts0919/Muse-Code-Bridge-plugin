@@ -67,6 +67,10 @@ Muse 要求核准或提出問題時，Codex 會顯示原始操作與選項。由
 
 Muse 模式由工具遵循 skill／prompt 指令來運作，沒有切換 Codex 本身的模型供應商。不同工具的 slash command 選單可能有所差異。
 
+`v0.1.2` 會區分 `completed`、`failed`、`cancelled`、`unqueued`，未知狀態則明確失敗。Muse 程序退出時，等待中的呼叫會以 `MUSE_HOST_EXITED` 收束；預先取消的呼叫不會啟動 turn。舊請求的 ACK 不會清掉較新的核准或問題。重試中斷的任務前，請先核對保留的 session。
+
+用量是 chat、response 與 status 的附加資訊。用量服務不可用時，仍保留原結果，回傳 `usage: null` 與 `usage_error`；明確查詢用量的操作則照實回報失敗。`accountLogin` 檢查仍是必要條件，整個操作會綁定通過檢查的同一條連線。
+
 ## 只安裝 skill，或接入其他 MCP 工具
 
 Skill 位於 [`plugins/muse-code-bridge/skills/muse-code-bridge/SKILL.md`](plugins/muse-code-bridge/skills/muse-code-bridge/SKILL.md)。只複製 skill 會提供操作指引，但仍需要連接本 Repo 的 MCP server，才能呼叫 Muse。

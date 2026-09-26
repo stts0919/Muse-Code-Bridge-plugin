@@ -33,6 +33,8 @@ If the raw text `/Muse` reaches the model instead of command selection, treat it
 
 Progress notifications are partial Muse output, not a completed answer. Wait for the tool's final result or a structured pending request.
 
+An `unqueued` result means the queued turn was retracted; do not present it as completed work. `MUSE_HOST_EXITED`, `TURN_CANCELLED`, or `UNKNOWN_TERMINAL_STATE` do not authorize automatic resubmission. If a result includes `usage: null` and `usage_error`, retain its authoritative response/status and explain only that the meter is unavailable.
+
 ## Approvals and questions
 
 When `chat_with_muse` returns `needs_user_action`:

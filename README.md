@@ -63,6 +63,10 @@ When Muse requests approval or asks a question, the host displays the operation 
 
 Mode is enforced by the host following the skill/prompt instructions; it does not replace the host's model provider. Skill command discovery varies between hosts.
 
+Version 0.1.2 preserves `completed`, `failed`, `cancelled`, and `unqueued` as distinct terminal results; unknown states fail closed. Host exit settles pending calls with `MUSE_HOST_EXITED`. A pre-cancelled call does not start a turn, and newer approval/questions remain pending when an earlier acknowledgement arrives. Inspect the retained session before retrying an interrupted task.
+
+Usage is supplementary to chat, response, and status results. When the meter is unavailable, these retain their result with `usage: null` and `usage_error`; explicit usage queries still report their failure. The `accountLogin` check remains mandatory and is tied to the same connection for the operation.
+
 ## Skill-only use and other MCP hosts
 
 The skill lives at [`plugins/muse-code-bridge/skills/muse-code-bridge/SKILL.md`](plugins/muse-code-bridge/skills/muse-code-bridge/SKILL.md). Copying it alone gives the host instructions, but it also needs this repository's MCP server to call Muse.

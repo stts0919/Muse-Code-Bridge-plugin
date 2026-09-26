@@ -79,6 +79,7 @@ codex plugin add muse-code-bridge@muse-code-bridge-public</code></pre></div>
         <div class="code-block"><div class="code-label"><span>查詢用量</span><button type="button" class="copy-button" aria-label="複製用量查詢">複製</button></div><pre><code>顯示 Muse Code 用量</code></pre></div>
         <p>Bridge 會讀取 Muse 回報的使用視窗，顯示已使用百分比、剩餘百分比與重置時間。支援 MCP Apps 的 client 可以顯示用量 widget；其他 client 可查看文字回覆。</p>
         <ul><li>這是當下的觀測值，沒有資料時會明確顯示未提供。</li><li>百分比不能自行換算成 token 或剩餘提示詞數。</li><li>時間依顯示端的本機語系與時區呈現。</li></ul>
+        <p><code>v0.1.2</code> 將用量視為任務結果的附加資訊。用量讀取失敗時，仍保留已完成的回覆或待核准狀態，並回傳 <code>usage: null</code> 與 <code>usage_error</code>；<code>accountLogin</code> 檢查仍是必要條件。</p>
       </section>
 
       <section id="clients">
@@ -123,6 +124,7 @@ codex plugin add muse-code-bridge@muse-code-bridge-public</code></pre></div>
         <div class="section-heading"><span class="section-number">07</span><h2>常見問題</h2></div>
         <details><summary>顯示找不到 Muse 執行檔，怎麼處理？</summary><p>先在 Terminal 確認 <code>muse --version</code> 可執行。桌面 App 的 PATH 可能與 shell 不同；可在本機 MCP 環境設定 <code>MUSE_BIN</code>，指向官方 CLI 的執行檔。</p></details>
         <details><summary>已經登入，為什麼 Bridge 仍拒絕執行？</summary><p>檢查 <code>get_muse_status</code> 回報是否為 <code>accountLogin</code>。若為 API-key 通道或未登入，請使用 <code>start_muse_subscription_login</code> 完成 Meta 瀏覽器授權，再重新查看狀態。</p></details>
+        <details><summary>Muse 中斷，或回傳 unqueued，算完成嗎？</summary><p><code>unqueued</code> 代表排隊中的回合已被撤回。程序退出會以 <code>MUSE_HOST_EXITED</code> 結束等待，未知終態也會明確失敗。這些情況都不能當成任務成功；重試前請先核對保留的 session。</p></details>
         <details><summary>只有 skill，能直接使用 Muse 嗎？</summary><p>Skill 提供操作流程，仍需要此 Repo 的 MCP server、Node.js 與官方 Muse CLI。建議在 Codex 安裝完整 plugin。</p></details>
         <details><summary>這是 Meta 或 OpenAI 官方 plugin 嗎？</summary><p>這是獨立的社群整合，以 MIT 授權公開，與 Meta、OpenAI 沒有隸屬關係。官方 Muse CLI 與你的訂閱仍依 Meta 的規則運作。</p></details>
       </section>

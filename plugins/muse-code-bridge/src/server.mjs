@@ -10,7 +10,7 @@ import {
 } from "./usage.mjs";
 
 const server = new McpServer(
-  { name: "muse-code-bridge", version: "0.1.1" },
+  { name: "muse-code-bridge", version: "0.1.2" },
   { capabilities: { logging: {} } },
 );
 const bridge = new MuseHostBridge();
