@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Muse Code Bridge 繁體中文文件：在 Codex 對話使用本機 Muse Code，安裝、帳號登入、核准問答與訂閱用量監控。">
+  <meta name="theme-color" content="#6554c0">
+  <title>Muse Code Bridge｜繁體中文使用文件</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#content">跳到內容</a>
+  <header class="site-header">
+    <a class="brand" href="#overview" aria-label="Muse Code Bridge 首頁"><span class="brand-mark" aria-hidden="true">M</span><span>Muse Code Bridge</span></a>
+    <div class="header-links"><span class="current-language" lang="zh-Hant">繁體中文</span><a href="https://github.com/stts0919/Muse-Code-Bridge-plugin/blob/main/README.md" lang="en">English ↗</a><a href="https://github.com/stts0919/Muse-Code-Bridge-plugin">GitHub ↗</a></div>
+  </header>
+
+  <div class="page-layout">
+    <aside class="sidebar">
+      <p class="nav-label">使用文件</p>
+      <nav aria-label="文件章節">
+        <a href="#overview" aria-current="location">認識 Bridge</a>
+        <a href="#install">安裝與登入</a>
+        <a href="#use">第一次使用</a>
+        <a href="#usage">用量監控</a>
+        <a href="#clients">其他 MCP 環境</a>
+        <a href="#tools">工具一覽</a>
+        <a href="#privacy">資料與隱私</a>
+        <a href="#faq">常見問題</a>
+      </nav>
+      <div class="sidebar-note"><span class="status-dot" aria-hidden="true"></span>本機執行 · 開放原始碼</div>
+    </aside>
+
+    <main id="content" tabindex="-1">
+      <section id="overview" class="intro-section">
+        <h1>在 Codex 裡，<br>接續你的 Muse 對話。</h1>
+        <p class="lead">透過本機 Muse Code Bridge，使用你的 Muse Code 帳號登入、保留專案對話，並查看訂閱用量。</p>
+        <div class="intro-actions"><a class="button-primary" href="#install">開始安裝 <span aria-hidden="true">↓</span></a><a class="text-link" href="https://github.com/stts0919/Muse-Code-Bridge-plugin">查看原始碼 ↗</a></div>
+        <div class="project-facts"><span>MIT 授權</span><span>Node.js 22+</span><span>Muse Code 1.3.0 已驗證</span></div>
+        <p>這是獨立的社群 plugin。它在你的電腦上啟動官方 <code>muse serve</code>，把 Muse 的回覆、核准選項與用量資料帶回 Codex。套件包含可重複使用的 <strong>Muse skill</strong> 和本機 <strong>MCP server</strong>。</p>
+        <div class="note"><strong>先確認使用通道</strong><p>Bridge 只在 Muse 回報 <code>accountLogin</code> 時允許模型回合，並移除子程序的 API key 環境覆蓋。你的訂閱資格與限額仍由 Meta 決定；額外建立的 Model API key 會走獨立的 API 計費。</p></div>
+      </section>
+
+      <section id="install">
+        <div class="section-heading"><span class="section-number">01</span><h2>安裝與登入</h2></div>
+        <p>準備 Node.js 22 或更新版本、官方 Muse Code CLI，以及具有適用訂閱資格的 Meta 帳號。</p>
+        <ol class="steps">
+          <li><h3>安裝 Muse Code，完成瀏覽器登入</h3><p>依照 <a href="https://dev.meta.ai/docs/muse-code">Meta 官方文件</a>安裝 CLI，再於 Terminal 執行下列指令。授權頁請選擇擁有訂閱的 Meta 帳號。</p>
+            <div class="code-block"><div class="code-label"><span>Terminal</span><button type="button" class="copy-button" aria-label="複製登入指令">複製</button></div><pre><code>muse --version
+muse login
+node --version</code></pre></div>
+          </li>
+          <li><h3>加入 marketplace 並安裝 plugin</h3>
+            <div class="code-block"><div class="code-label"><span>Codex CLI</span><button type="button" class="copy-button" aria-label="複製 plugin 安裝指令">複製</button></div><pre><code>codex plugin marketplace add stts0919/Muse-Code-Bridge-plugin
+codex plugin add muse-code-bridge@muse-code-bridge-public</code></pre></div>
+            <p>也可以在 Codex 的 plugin 目錄選擇 <strong>Muse Code Bridge Public</strong>，再安裝 <strong>Muse Code Bridge</strong>。</p>
+          </li>
+          <li><h3>開啟新的 Codex task</h3><p>讓新安裝的 skill 和 MCP tools 載入。Repo 已附上打包好的 server，這條安裝路徑不需要執行 <code>npm install</code>。</p></li>
+        </ol>
+        <p class="small-note">桌面 App 的環境必須能找到 <code>node</code> 和 <code>muse</code>。若 Muse 不在 App 的 PATH，可在本機 MCP 環境設定 <code>MUSE_BIN</code>；個人執行路徑留在本機即可。</p>
+      </section>
+
+      <section id="use">
+        <div class="section-heading"><span class="section-number">02</span><h2>第一次使用</h2></div>
+        <p>從 <code>/</code> skill 選單選擇 <strong>Muse</strong>，或直接告訴 Codex：</p>
+        <div class="code-block"><div class="code-label"><span>Codex 對話</span><button type="button" class="copy-button" aria-label="複製開啟 Muse 模式指令">複製</button></div><pre><code>使用 $muse-code-bridge 開啟這個 task 的 Muse 模式。</code></pre></div>
+        <p>當 skill 收到純文字 <code>/Muse</code>，也會啟用相同流程。開啟後，同一 task 的實質任務會交給目前 workspace 保留的 Muse session，回覆會標示為 <strong>Muse Code:</strong>。</p>
+        <h3>先試一個唯讀任務</h3>
+        <div class="code-block"><div class="code-label"><span>試用提示詞</span><button type="button" class="copy-button" aria-label="複製唯讀任務提示詞">複製</button></div><pre><code>請閱讀這個 workspace，說明程式進入點與啟動方式，先不要修改檔案。</code></pre></div>
+        <p>Muse 要求核准或提出問題時，Codex 會顯示原始操作與選項。由你明確決定，skill 不會代選核准。要回到一般 Codex 處理，輸入 <code>/MuseOff</code>，或說「離開 Muse 模式」。</p>
+        <div class="note note-quiet"><strong>對話轉交的方式</strong><p>Muse 模式由 Codex 遵循 skill／prompt 指令來運作；它會呼叫本機 Muse，Codex 本身的模型供應商維持原有設定。不同 client 的 slash command 選單可能不同。</p></div>
+      </section>
+
+      <section id="usage">
+        <div class="section-heading"><span class="section-number">03</span><h2>用量監控</h2></div>
+        <p>在同一個 Codex task 輸入：</p>
+        <div class="code-block"><div class="code-label"><span>查詢用量</span><button type="button" class="copy-button" aria-label="複製用量查詢">複製</button></div><pre><code>顯示 Muse Code 用量</code></pre></div>
+        <p>Bridge 會讀取 Muse 回報的使用視窗，顯示已使用百分比、剩餘百分比與重置時間。支援 MCP Apps 的 client 可以顯示用量 widget；其他 client 可查看文字回覆。</p>
+        <ul><li>這是當下的觀測值，沒有資料時會明確顯示未提供。</li><li>百分比不能自行換算成 token 或剩餘提示詞數。</li><li>時間依顯示端的本機語系與時區呈現。</li></ul>
+      </section>
+
+      <section id="clients">
+        <div class="section-heading"><span class="section-number">04</span><h2>其他 MCP 環境</h2></div>
+        <p>七個 MCP tools 可接入支援本機 stdio MCP 的 client，例如 Claude Code 或 VS Code 中適用的 MCP 工具。自動 Muse 模式與用量 widget 則取決於 client 的 skill、prompt 和 MCP Apps 支援。</p>
+        <p>先 clone Repo，再把以下示範路徑換成你電腦上的位置。設定檔位置請依各 client 的文件操作。</p>
+        <div class="code-block"><div class="code-label"><span>MCP 設定範例</span><button type="button" class="copy-button" aria-label="複製 MCP 設定範例">複製</button></div><pre><code>{
+  "mcpServers": {
+    "muse-code-bridge": {
+      "command": "node",
+      "args": ["/absolute/path/to/Muse-Code-Bridge-plugin/plugins/muse-code-bridge/dist/server.mjs"]
+    }
+  }
+}</code></pre></div>
+        <p>只複製 <a href="https://github.com/stts0919/Muse-Code-Bridge-plugin/blob/main/plugins/muse-code-bridge/skills/muse-code-bridge/SKILL.md">SKILL.md</a> 會提供操作指引；實際呼叫 Muse 仍需要 MCP server。</p>
+      </section>
+
+      <section id="tools">
+        <div class="section-heading"><span class="section-number">05</span><h2>工具一覽</h2></div>
+        <div class="table-scroll" role="region" aria-label="七個 MCP 工具" tabindex="0"><table><thead><tr><th scope="col">Tool</th><th scope="col">用途</th></tr></thead><tbody>
+          <tr><td><code>get_muse_status</code></td><td>查看執行檔、登入通道、session 與待處理請求。</td></tr>
+          <tr><td><code>start_muse_subscription_login</code></td><td>取得 Meta 瀏覽器授權網址與代碼。</td></tr>
+          <tr><td><code>chat_with_muse</code></td><td>把 workspace 訊息交給保留的 Muse session。</td></tr>
+          <tr><td><code>respond_to_muse</code></td><td>傳回使用者選定的核准選項或答案。</td></tr>
+          <tr><td><code>get_muse_usage</code></td><td>讀取目前訂閱使用視窗。</td></tr>
+          <tr><td><code>cancel_muse_turn</code></td><td>要求取消指定回合。</td></tr>
+          <tr><td><code>reset_muse_session</code></td><td>清除 workspace 對應，不刪除 Muse 歷史。</td></tr>
+        </tbody></table></div>
+      </section>
+
+      <section id="privacy">
+        <div class="section-heading"><span class="section-number">06</span><h2>資料與隱私</h2></div>
+        <p>公開 Repo 包含程式碼與合成測試，不附帳號、credential、workspace 對應表、對話或真實用量快照。網站使用本機靜態素材，沒有分析追蹤或第三方字型請求。</p>
+        <h3>使用時，資料存在哪裡？</h3>
+        <p>Bridge 在使用者的系統資料目錄保存 workspace 與 session 的對應。可用 <code>MUSE_BRIDGE_STATE_PATH</code> 在本機改變位置，建議放在 Git repo 之外。</p>
+        <p>Status 與用量回覆會省略帳號名稱和 Email，診斷訊息會遮蔽常見 credential 格式。提示詞與選取的專案內容仍會由 Muse／Meta 處理，Muse Code 或 MCP client 也可能依自己的規則保留紀錄。</p>
+        <p><code>reset_muse_session</code> 只清除 Bridge 對應。請勿把 runtime state、log、匯出對話或含個資的截圖上傳公開 Repo。</p>
+      </section>
+
+      <section id="faq">
+        <div class="section-heading"><span class="section-number">07</span><h2>常見問題</h2></div>
+        <details><summary>顯示找不到 Muse 執行檔，怎麼處理？</summary><p>先在 Terminal 確認 <code>muse --version</code> 可執行。桌面 App 的 PATH 可能與 shell 不同；可在本機 MCP 環境設定 <code>MUSE_BIN</code>，指向官方 CLI 的執行檔。</p></details>
+        <details><summary>已經登入，為什麼 Bridge 仍拒絕執行？</summary><p>檢查 <code>get_muse_status</code> 回報是否為 <code>accountLogin</code>。若為 API-key 通道或未登入，請使用 <code>start_muse_subscription_login</code> 完成 Meta 瀏覽器授權，再重新查看狀態。</p></details>
+        <details><summary>只有 skill，能直接使用 Muse 嗎？</summary><p>Skill 提供操作流程，仍需要此 Repo 的 MCP server、Node.js 與官方 Muse CLI。建議在 Codex 安裝完整 plugin。</p></details>
+        <details><summary>這是 Meta 或 OpenAI 官方 plugin 嗎？</summary><p>這是獨立的社群整合，以 MIT 授權公開，與 Meta、OpenAI 沒有隸屬關係。官方 Muse CLI 與你的訂閱仍依 Meta 的規則運作。</p></details>
+      </section>
+
+      <footer class="page-footer"><p>Muse Code Bridge · MIT</p><div><a href="https://github.com/stts0919/Muse-Code-Bridge-plugin/blob/main/README.zh-TW.md">繁體中文 README ↗</a><a href="https://github.com/stts0919/Muse-Code-Bridge-plugin/issues">回報問題 ↗</a></div></footer>
+    </main>
+  </div>
+  <p id="copy-status" class="sr-only" role="status" aria-live="polite"></p>
+</body>
+</html>

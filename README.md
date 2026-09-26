@@ -1,5 +1,7 @@
 # Muse Code Bridge plugin
 
+[繁體中文文件](README.zh-TW.md) · [GitHub Pages](https://stts0919.github.io/Muse-Code-Bridge-plugin/)
+
 Use an account-authenticated Muse Code session from a Codex conversation. The plugin includes a reusable **Muse** skill, a local MCP server, retained workspace sessions, explicit approval handling, and a subscription usage monitor.
 
 This is an independent community integration. Muse Code itself is installed separately; the bridge launches the official CLI with `muse serve`. The repository contains code and synthetic tests only. It includes no account credentials, personal workspace mappings, or conversation history.
