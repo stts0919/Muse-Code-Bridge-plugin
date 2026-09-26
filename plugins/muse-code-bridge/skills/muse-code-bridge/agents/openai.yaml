@@ -1,0 +1,8 @@
+interface:
+  display_name: "Muse"
+  short_description: "Turn on task-scoped Muse Code conversation mode."
+  default_prompt: "Use $muse-code-bridge to enable Muse mode for this task; route later messages to the retained Muse Code subscription session until I exit Muse mode."
+  brand_color: "#6D5DFC"
+
+policy:
+  allow_implicit_invocation: true

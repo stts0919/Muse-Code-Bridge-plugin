@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "muse-code-bridge": {
+      "cwd": ".",
+      "command": "node",
+      "args": ["./dist/server.mjs"]
+    }
+  }
+}

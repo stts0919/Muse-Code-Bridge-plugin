@@ -1,0 +1,20 @@
+{
+  "name": "muse-code-bridge",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A local MCP bridge to account-authenticated Muse Code sessions.",
+  "license": "MIT",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node --check src/server.mjs && node --check src/muse-host.mjs && node --check src/usage.mjs && node --check src/runtime.mjs && node --check src/privacy.mjs",
+    "test": "node --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.30.1",
+    "@muse-code/sdk": "1.3.0",
+    "zod": "4.6.5"
+  },
+  "devDependencies": { "esbuild": "0.28.2" }
+}

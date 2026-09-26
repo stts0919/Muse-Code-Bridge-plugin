@@ -1,0 +1,16 @@
+**/node_modules/
+**/.DS_Store
+**/.env
+**/.env.*
+**/.dev.vars
+**/*.log
+**/state.json
+**/state.json.tmp
+**/auth.json
+**/credentials.json
+**/sessions/
+**/transcripts/
+**/*.map
+work/
+coverage/
+*.tgz

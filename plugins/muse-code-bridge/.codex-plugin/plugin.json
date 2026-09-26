@@ -1,0 +1,21 @@
+{
+  "name": "muse-code-bridge",
+  "version": "0.1.0",
+  "description": "Use account-authenticated Muse Code from Codex through a local MCP bridge.",
+  "author": {
+    "name": "Muse Code Bridge contributors"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Muse Code Bridge",
+    "shortDescription": "Chat with Muse Code and monitor subscription usage.",
+    "longDescription": "Runs the installed Muse Code CLI locally, retains workspace conversations, relays user approvals, and displays reported subscription usage.",
+    "developerName": "Muse Code Bridge contributors",
+    "category": "Productivity",
+    "capabilities": [],
+    "defaultPrompt": ["Use my Muse Code subscription for this workspace."]
+  },
+  "repository": "https://github.com/stts0919/Muse-Code-Bridge-plugin",
+  "license": "MIT",
+  "mcpServers": "./.mcp.json"
+}

@@ -1,0 +1,20 @@
+{
+  "name": "muse-code-bridge-public",
+  "interface": {
+    "displayName": "Muse Code Bridge Public"
+  },
+  "plugins": [
+    {
+      "name": "muse-code-bridge",
+      "source": {
+        "source": "local",
+        "path": "./plugins/muse-code-bridge"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}
